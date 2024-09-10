@@ -123,7 +123,4 @@ st.sidebar.info("Example 2: chicken, salt, rice, tomato, lettuce, pepper, cucumb
 st.sidebar.info("Be creative!")
 st.sidebar.info("We hope you find a delicious dish to enjoy. Don't forget to rate this app!")
 
-feedback = st.sidebar.slider('How much would you rate this app?',min_value=0,max_value=5,step=1)
 
-if feedback:
-  st.header("Thank you for rating the app!")
