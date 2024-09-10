@@ -4,6 +4,7 @@ import os
 import datetime
 import matplotlib.pyplot as plt
 import seaborn as sns
+import itertools
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
