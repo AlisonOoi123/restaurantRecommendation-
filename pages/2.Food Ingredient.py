@@ -32,7 +32,7 @@ st.set_page_config(
     page_icon=None,
 )
 
-st.set_page_config(layout='wide', initial_sidebar_state='expanded')
+# Sidebar
 st.sidebar.image('Data/App_icon.png')
 
 
