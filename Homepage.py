@@ -7,7 +7,7 @@ st.set_page_config(layout='centered', initial_sidebar_state='expanded')
 
 st. sidebar.image('Data/App_icon.png')
 
-image = Image.open('Data/Food.jpg')
+image = Image.open('Data/restaurant.jpg')
 st.image(image, use_column_width=True)
 
 st.title("Discover the best places to eat in your town.")
