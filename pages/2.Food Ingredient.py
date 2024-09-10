@@ -35,35 +35,7 @@ st.set_page_config(
 # Sidebar
 st.sidebar.image('Data/App_icon.png')
 st.sidebar.markdown("""
-### Welcome to our sidebar!
-Discover insights about the culinary world, including popular cuisines, top states for dining, and more. 
-Click on the analysis tabs below:
-""")
-# Load data for sidebar visualization
-df = pd.read_csv("./Data/TripAdvisor_RestauarantRecommendation.csv")
-df = df.drop(['Contact Number', 'Trip_advisor Url', 'Menu'], axis=1)
-df = df.drop([1744, 2866])
-df = df.reset_index(drop=True)
-df.Comments = df.Comments.fillna('')
-df.Type = df.Type.fillna(df.Type.value_counts().index[0])
 
-# Sidebar visualization for cuisine types
-st.sidebar.markdown("### 10 Most Popular Types of Cuisines")
-types = list(itertools.chain(*[t.split(",") for t in df.Type if isinstance(t, str)]))
-types_counts = pd.Series(types).value_counts()[:10]
-fig, ax = plt.subplots()
-fig.set_facecolor('#121212') 
-ax.set_facecolor('#121212')
-
-pie = types_counts.plot(kind='pie', shadow=True, cmap=plt.get_cmap('Spectral'), ax=ax)
-for text in pie.texts:
-    text.set_color('white')
-
-ax.set_ylabel('')
-ax.tick_params(colors='white')
-ax.title.set_color('white')
-plt.tight_layout()
-st.sidebar.pyplot(fig)
 
 # Display the front end aspect
 st.markdown(html_temp, unsafe_allow_html=True)
