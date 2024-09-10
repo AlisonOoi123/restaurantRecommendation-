@@ -32,9 +32,8 @@ st.set_page_config(
     page_icon=None,
 )
 
-# Sidebar
+st.set_page_config(layout='wide', initial_sidebar_state='expanded')
 st.sidebar.image('Data/App_icon.png')
-st.sidebar.markdown("""
 
 
 # Display the front end aspect
