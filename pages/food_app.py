@@ -33,11 +33,6 @@ st.set_page_config(
 )
 
 # Sidebar
-option = st.sidebar.selectbox(
-    'Food Ingredients',  # Updated label
-    ['Homepage', 'Insights', 'Recommended', 'Restaurant']
-)
-
 st.sidebar.image('Data/App_icon.png')
 st.sidebar.markdown("""
 ### Welcome to our sidebar!
