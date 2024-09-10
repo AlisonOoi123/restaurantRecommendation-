@@ -4,6 +4,7 @@ import os
 import datetime
 import matplotlib.pyplot as plt
 import seaborn as sns
+import itertools
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -31,12 +32,16 @@ st.set_page_config(
     page_icon=None,
 )
 
+# Sidebar
+st.sidebar.image('Data/App_icon.png')
+
+
 # Display the front end aspect
 st.markdown(html_temp, unsafe_allow_html=True)
 
 # Add a picture of food
 # Center-align the image using st.image
-st.image("./AI061118-16_xlarge.jpg", use_column_width=True)
+st.image("./food-spread.jpg", use_column_width=True)
 
 
 # Add a caption
@@ -118,7 +123,4 @@ st.sidebar.info("Example 2: chicken, salt, rice, tomato, lettuce, pepper, cucumb
 st.sidebar.info("Be creative!")
 st.sidebar.info("We hope you find a delicious dish to enjoy. Don't forget to rate this app!")
 
-feedback = st.sidebar.slider('How much would you rate this app?',min_value=0,max_value=5,step=1)
 
-if feedback:
-  st.header("Thank you for rating the app!")
