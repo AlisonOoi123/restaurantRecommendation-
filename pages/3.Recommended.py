@@ -55,25 +55,21 @@ name = st.selectbox('Select the Restaurant you like', (list(df['Name'].unique())
 st.markdown("## Rate Your Experience")
 rating = st.slider('Rate this restaurant (1-5)', 1, 5)
 
-# Check if feedback.csv exists, if not create it
-feedback_file = 'Data/feedback.csv'
+# Use an in-memory storage for feedback for each user session
+if 'user_feedback' not in st.session_state:
+    st.session_state['user_feedback'] = []
 
-if not os.path.exists(feedback_file):
-    feedback_df = pd.DataFrame(columns=['restaurant', 'rating'])
-    feedback_df.to_csv(feedback_file, index=False)
+# Display user's feedback (for the current session)
+st.markdown("### Your Feedback:")
+st.write(st.session_state['user_feedback'])
 
-# Load feedback data from feedback.csv
-feedback_df = pd.read_csv(feedback_file)
-
+# Store feedback for the current session only
 if st.button('Submit Rating'):
-    # Save the feedback to the CSV file
     feedback_data = {'restaurant': name, 'rating': rating}
-    feedback_df = feedback_df.append(feedback_data, ignore_index=True)
-    feedback_df.to_csv(feedback_file, index=False)  # Save feedback
+    st.session_state['user_feedback'].append(feedback_data)
     st.success('Thanks for your feedback!')
 
-
-def recom(dataframe, name, feedback_df):
+def recom(dataframe, name, feedback_data):
     dataframe = dataframe.drop(["Trip_advisor Url", "Menu"], axis=1)
     
     # Create TF-IDF matrix
@@ -88,11 +84,11 @@ def recom(dataframe, name, feedback_df):
     
     sim_scores = list(enumerate(cosine_sim[idx]))
 
-    # Adjust similarity scores based on feedback
-    for feedback in feedback_df.itertuples():
-        if feedback.restaurant in dataframe.Name.values:
-            feedback_idx = indices[feedback.restaurant]
-            sim_scores[feedback_idx] = (sim_scores[feedback_idx][0], sim_scores[feedback_idx][1] + feedback.rating / 5.0)
+    # Adjust similarity scores based on feedback (for current session)
+    for feedback in feedback_data:
+        if feedback['restaurant'] in dataframe.Name.values:
+            feedback_idx = indices[feedback['restaurant']]
+            sim_scores[feedback_idx] = (sim_scores[feedback_idx][0], sim_scores[feedback_idx][1] + feedback['rating'] / 5.0)
 
     # Sort by similarity score
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
@@ -146,5 +142,5 @@ def recom(dataframe, name, feedback_df):
     image = Image.open('Data/food_2.jpg')
     st.image(image, use_column_width=True)
 
-# Call the recommendation function
-recom(df, name, feedback_df)
+# Call the recommendation function using session-based feedback
+recom(df, name, st.session_state['user_feedback'])
