@@ -3,7 +3,6 @@ import streamlit as st
 from PIL import Image
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
-import os
 
 st.set_page_config(layout='centered', initial_sidebar_state='expanded')
 st.sidebar.image('Data/App_icon.png')
@@ -37,115 +36,114 @@ Begin exploring the diverse culinary landscape and uncover hidden gastronomic tr
 
 image = Image.open('Data/food_cover.jpg')
 st.image(image, use_column_width=True)
+
 st.markdown(""" ### Select Restaurant """)
 
-# Load restaurant data
 df = pd.read_csv("./Data/TripAdvisor_RestauarantRecommendation.csv")
 
-df["Location"] = df["Street Address"] + ', ' + df["Location"]
-df = df.drop(['Street Address'], axis=1)
+df["Location"] = df["Street Address"] +', '+ df["Location"]
+df = df.drop(['Street Address',], axis=1)
+
 df = df[df['Comments'].notna()]
 df = df.drop_duplicates(subset='Name')
 df = df.reset_index(drop=True)
 
 name = st.selectbox('Select the Restaurant you like', (list(df['Name'].unique())))
 
-# Collect User Feedback
-st.markdown("## Rate Your Experience")
-
-# Create text input for user review
-review_text = st.text_area('Write your review here:', '')
-
-# Create a slider for user rating
-rating = st.slider('Rate this restaurant (1-5)', 1, 5)
-
-# Use an in-memory storage for feedback for each user session
-if 'user_feedback' not in st.session_state:
-    st.session_state['user_feedback'] = []
-
-# Display user's feedback (for the current session)
-st.markdown("### Your Feedback:")
-for feedback in st.session_state['user_feedback']:
-    st.write(f"Restaurant: {feedback['restaurant']}, Rating: {feedback['rating']}, Review: {feedback['review']}")
-
-# Store feedback for the current session only
-if st.button('Submit Rating'):
-    feedback_data = {'restaurant': name, 'rating': rating, 'review': review_text}
-    st.session_state['user_feedback'].append(feedback_data)
-    st.success('Thanks for your feedback!')
-
-def recom(dataframe, name, feedback_data):
+def recom(dataframe, name):
     dataframe = dataframe.drop(["Trip_advisor Url", "Menu"], axis=1)
     
-    # Create TF-IDF matrix
+    # Creating recommendations
+
     tfidf = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf.fit_transform(dataframe.Comments)
-    cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+    cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)    
     indices = pd.Series(dataframe.index, index=dataframe.Name).drop_duplicates()
     idx = indices[name]
-    
     if isinstance(idx, pd.Series) == True:
         idx = idx[0]
     
     sim_scores = list(enumerate(cosine_sim[idx]))
-
-    # Adjust similarity scores based on feedback (for current session)
-    for feedback in feedback_data:
-        if feedback['restaurant'] in dataframe.Name.values:
-            feedback_idx = indices[feedback['restaurant']]
-            sim_scores[feedback_idx] = (sim_scores[feedback_idx][0], sim_scores[feedback_idx][1] + feedback['rating'] / 5.0)
-
-    # Sort by similarity score
-    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-    sim_scores = sim_scores[1:11]  # Top 10 recommendations
+    sim_scores = sorted(sim_scores, key=lambda x:x[1], reverse=True)
+    sim_scores = sim_scores[1:11]
     restaurant_indices = [i[0] for i in sim_scores]
     
     recommended = list(dataframe['Name'].iloc[restaurant_indices])
     st.markdown("## Top 10 Restaurants you might like:")
 
-    # Display the recommended restaurants
     title = st.selectbox('Restaurants most similar', recommended)
-    
     if title in dataframe['Name'].values:
-        Reviews = dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Reviews']
+        Reviews = (dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Reviews'])
         st.markdown("### Restaurant Rating:-")
-        
-        # Show rating images based on review score
+
+        # REVIEWS
         if Reviews == '4.5 of 5 bubbles':
             image = Image.open('Data/Ratings/Img4.5.png')
             st.image(image, use_column_width=True)
+
         elif Reviews == '4 of 5 bubbles':
             image = Image.open('Data/Ratings/Img4.0.png')
             st.image(image, use_column_width=True)
+
         elif Reviews == '5 of 5 bubbles':
             image = Image.open('Data/Ratings/Img5.0.png')
             st.image(image, use_column_width=True)
 
-        # Show comments
-        comment = dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Comments']
-        if comment != "No Comments":
-            st.markdown("### Comments:-")
-            st.warning(comment)
+        else:
+            pass
         
-        # Show restaurant type
-        Type = dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Type']
+        # COMMENTS
+        if 'Comments' not in dataframe.columns:
+            pass
+        else:
+            comment = (dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Comments'])
+            if comment != "No Comments":
+                st.markdown("### Comments:-")
+                st.warning(comment)
+            else:
+                pass
+
+        # TYPE OF RESTAURANT
+        Type = (dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Type'])
         st.markdown("### Restaurant Category:-")
         st.error(Type)
 
-        # Show location
-        Location = dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Location']
+        # LOCATION
+        Location = (dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Location'])
         st.markdown("### The Address:-")
         st.success(Location)
 
-        # Show contact details
-        contact_no = dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Contact Number']
-        if contact_no != "Not Available":
+        # CONTACT DETAILS
+        contact_no = (dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Contact Number'])
+        if contact_no == "Not Available":
+            pass
+        else:
             st.markdown("### Contact Details:-")
-            st.info('Phone: ' + contact_no)
+            st.info('Phone:- '+ contact_no)
 
     st.text("")
     image = Image.open('Data/food_2.jpg')
     st.image(image, use_column_width=True)
 
-# Call the recommendation function using session-based feedback
-recom(df, name, st.session_state['user_feedback'])
+recom(df, name)
+
+# Feedback Section
+st.markdown("## Rate Your Experience")
+rating = st.slider('Rate this restaurant (1-5)', 1, 5)
+feedback_text = st.text_area('Your Feedback', '')
+
+if st.button('Submit Feedback'):
+    feedback_file = 'Data/feedback.csv'
+    
+    # Check if feedback file exists and create if not
+    try:
+        feedback_df = pd.read_csv(feedback_file)
+    except FileNotFoundError:
+        feedback_df = pd.DataFrame(columns=['Restaurant', 'Rating', 'Feedback'])
+    
+    # Save feedback to DataFrame
+    feedback_data = {'Restaurant': title, 'Rating': rating, 'Feedback': feedback_text}
+    feedback_df = feedback_df.append(feedback_data, ignore_index=True)
+    feedback_df.to_csv(feedback_file, index=False)
+    
+    st.success('Thanks for your feedback!')
