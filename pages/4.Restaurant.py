@@ -23,7 +23,7 @@ New_York = New_York.drop(['Street Address', ], axis=1)
 
 New_Jersey = pd.read_csv('Data/New Jersey/New_Jersey.csv', sep=',')
 New_Jersey["Location"] = New_Jersey["Street Address"] +', '+ New_Jersey["Location"]
-New_Jersey  = New_Jersey.drop(['Street Address', ], axis=1)
+New_Jersey = New_Jersey.drop(['Street Address', ], axis=1)
 
 Texas = pd.read_csv('Data/Texas/Texas.csv', sep=',')
 Texas["Location"] = Texas["Street Address"] +', '+ Texas["Location"]
@@ -69,20 +69,20 @@ def details(dataframe, option):
 
     if option == 'New Jersey':
         image = Image.open('Data/New Jersey/nj.png')
-        st.image(image, use_column_width=True)    
-    
+        st.image(image, use_column_width=True)
+
     elif option == 'New York':
         image = Image.open('Data/New York/ny.jpg')
         st.image(image, use_column_width=True)
-    
+
     elif option == 'California':
         image = Image.open('Data/California/cali.jpg')
-        st.image(image, use_column_width=True)    
-        
+        st.image(image, use_column_width=True)
+
     elif option == 'Texas':
         image = Image.open('Data/Texas/Texas.jpg')
-        st.image(image, use_column_width=True)    
-        
+        st.image(image, use_column_width=True)
+
     elif option == 'Washington':
         image = Image.open('Data/Washington/washington.jpg')
         st.image(image, use_column_width=True)
@@ -97,12 +97,15 @@ def details(dataframe, option):
         if Reviews == '4.5':
             image = Image.open('Data/Ratings/Img4.5.png')
             st.image(image, use_column_width=True)
+
         elif Reviews == '4':
             image = Image.open('Data/Ratings/Img4.0.png')
             st.image(image, use_column_width=True)
+
         elif Reviews == '5':
             image = Image.open('Data/Ratings/Img5.0.png')
             st.image(image, use_column_width=True)
+
         else:
             pass
 
@@ -132,7 +135,7 @@ def details(dataframe, option):
             pass
         else:
             st.subheader("Contact Details:-")
-            st.info('Phone:- '+ contact_no)
+            st.info('Phone:- ' + contact_no)
 
     st.text("")
     image = Image.open('Data/food_2.jpg')
@@ -155,32 +158,28 @@ elif option == 'Washington':
 
 # Collect User Feedback
 st.markdown("## Rate Your Experience")
+rating = st.slider('Rate this restaurant (1-5)', 1, 5)
+feedback_comment = st.text_area('Your Feedback')
 
-# Create placeholders for feedback input
-feedback_placeholder = st.empty()
-
-with feedback_placeholder.form(key='feedback_form'):
-    rating = st.slider('Rate this restaurant (1-5)', 1, 5)
-    feedback_comment = st.text_area('Your Feedback')
-    submit_button = st.form_submit_button(label='Submit Feedback')
-
-    if submit_button:
-        feedback_file = 'Data/feedback.csv'
-
-        # Create the CSV file if it doesn't exist
-        if not os.path.isfile(feedback_file):
-            feedback_df = pd.DataFrame(columns=['Reviews', 'Comments'])
-            feedback_df.to_csv(feedback_file, index=False)
-
-        # Load existing feedback data
-        feedback_df = pd.read_csv(feedback_file)
-
-        # Append new feedback
-        new_feedback = pd.DataFrame([{'Reviews': f'{rating} of 5 bubbles', 'Comments': feedback_comment}])
-        feedback_df = pd.concat([feedback_df, new_feedback], ignore_index=True)
+if st.button('Submit Feedback'):
+    # Save the feedback to a CSV file
+    feedback_file = 'Data/feedback.csv'
+    
+    # Create the CSV file if it doesn't exist
+    if not os.path.isfile(feedback_file):
+        feedback_df = pd.DataFrame(columns=['Reviews', 'Comments'])
         feedback_df.to_csv(feedback_file, index=False)
+    
+    # Load existing feedback data
+    feedback_df = pd.read_csv(feedback_file)
 
-        st.success('Thanks for your feedback!')
-
-        # Clear the feedback form
-        feedback_placeholder.empty()
+    # Append new feedback
+    new_feedback = pd.DataFrame([{'Reviews': f'{rating} of 5 bubbles', 'Comments': feedback_comment}])
+    feedback_df = pd.concat([feedback_df, new_feedback], ignore_index=True)
+    feedback_df.to_csv(feedback_file, index=False)
+    
+    # Clear the fields after submission
+    st.session_state.rating = None
+    st.session_state.feedback_comment = ''
+    
+    st.success('Thanks for your feedback!')
