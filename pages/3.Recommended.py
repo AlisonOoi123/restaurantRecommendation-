@@ -51,24 +51,6 @@ df = df.reset_index(drop=True)
 
 name = st.selectbox('Select the Restaurant you like', (list(df['Name'].unique())))
 
-# Collect User Feedback
-st.markdown("## Rate Your Experience")
-rating = st.slider('Rate this restaurant (1-5)', 1, 5)
-
-# Use an in-memory storage for feedback for each user session
-if 'user_feedback' not in st.session_state:
-    st.session_state['user_feedback'] = []
-
-# Display user's feedback (for the current session)
-st.markdown("### Your Feedback:")
-st.write(st.session_state['user_feedback'])
-
-# Store feedback for the current session only
-if st.button('Submit Rating'):
-    feedback_data = {'restaurant': name, 'rating': rating}
-    st.session_state['user_feedback'].append(feedback_data)
-    st.success('Thanks for your feedback!')
-
 def recom(dataframe, name, feedback_data):
     dataframe = dataframe.drop(["Trip_advisor Url", "Menu"], axis=1)
     
@@ -141,6 +123,24 @@ def recom(dataframe, name, feedback_data):
     st.text("")
     image = Image.open('Data/food_2.jpg')
     st.image(image, use_column_width=True)
+
+# Collect User Feedback
+st.markdown("## Rate Your Experience")
+rating = st.slider('Rate this restaurant (1-5)', 1, 5)
+
+# Use an in-memory storage for feedback for each user session
+if 'user_feedback' not in st.session_state:
+    st.session_state['user_feedback'] = []
+
+# Display user's feedback (for the current session)
+st.markdown("### Your Feedback:")
+st.write(st.session_state['user_feedback'])
+
+# Store feedback for the current session only
+if st.button('Submit Rating'):
+    feedback_data = {'restaurant': name, 'rating': rating}
+    st.session_state['user_feedback'].append(feedback_data)
+    st.success('Thanks for your feedback!')
 
 # Call the recommendation function using session-based feedback
 recom(df, name, st.session_state['user_feedback'])
