@@ -3,6 +3,7 @@ import streamlit as st
 from PIL import Image
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
+import os
 
 st.set_page_config(layout='centered', initial_sidebar_state='expanded')
 st.sidebar.image('Data/App_icon.png')
@@ -36,7 +37,6 @@ Begin exploring the diverse culinary landscape and uncover hidden gastronomic tr
 
 image = Image.open('Data/food_cover.jpg')
 st.image(image, use_column_width=True)
-
 st.markdown(""" ### Select Restaurant """)
 
 df = pd.read_csv("./Data/TripAdvisor_RestauarantRecommendation.csv")
@@ -50,11 +50,34 @@ df = df.reset_index(drop=True)
 
 name = st.selectbox('Select the Restaurant you like', (list(df['Name'].unique())))
 
+# Collect User Feedback
+st.markdown("## Rate Your Experience")
+rating = st.slider('Rate this restaurant (1-5)', 1, 5)
+feedback_comment = st.text_area('Your Feedback')
+
+if st.button('Submit Feedback'):
+    # Save the feedback to a CSV file
+    feedback_file = 'Data/feedback.csv'
+    
+    # Create the CSV file if it doesn't exist
+    if not os.path.isfile(feedback_file):
+        feedback_df = pd.DataFrame(columns=['Reviews', 'Comments'])
+        feedback_df.to_csv(feedback_file, index=False)
+    
+    # Load existing feedback data
+    feedback_df = pd.read_csv(feedback_file)
+
+    # Append new feedback
+    new_feedback = {'Reviews': f'{rating} of 5 bubbles', 'Comments': feedback_comment}
+    feedback_df = feedback_df.append(new_feedback, ignore_index=True)
+    feedback_df.to_csv(feedback_file, index=False)
+    
+    st.success('Thanks for your feedback!')
+
 def recom(dataframe, name):
     dataframe = dataframe.drop(["Trip_advisor Url", "Menu"], axis=1)
     
     # Creating recommendations
-
     tfidf = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf.fit_transform(dataframe.Comments)
     cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)    
@@ -80,15 +103,12 @@ def recom(dataframe, name):
         if Reviews == '4.5 of 5 bubbles':
             image = Image.open('Data/Ratings/Img4.5.png')
             st.image(image, use_column_width=True)
-
         elif Reviews == '4 of 5 bubbles':
             image = Image.open('Data/Ratings/Img4.0.png')
             st.image(image, use_column_width=True)
-
         elif Reviews == '5 of 5 bubbles':
             image = Image.open('Data/Ratings/Img5.0.png')
             st.image(image, use_column_width=True)
-
         else:
             pass
         
@@ -119,31 +139,10 @@ def recom(dataframe, name):
             pass
         else:
             st.markdown("### Contact Details:-")
-            st.info('Phone:- '+ contact_no)
+            st.info('Phone:- ' + contact_no)
 
     st.text("")
     image = Image.open('Data/food_2.jpg')
     st.image(image, use_column_width=True)
 
 recom(df, name)
-
-# Feedback Section
-st.markdown("## Rate Your Experience")
-rating = st.slider('Rate this restaurant (1-5)', 1, 5)
-feedback_text = st.text_area('Your Feedback', '')
-
-if st.button('Submit Feedback'):
-    feedback_file = 'Data/feedback.csv'
-    
-    # Check if feedback file exists and create if not
-    try:
-        feedback_df = pd.read_csv(feedback_file)
-    except FileNotFoundError:
-        feedback_df = pd.DataFrame(columns=['Restaurant', 'Rating', 'Feedback'])
-    
-    # Save feedback to DataFrame
-    feedback_data = {'Restaurant': title, 'Rating': rating, 'Feedback': feedback_text}
-    feedback_df = feedback_df.append(feedback_data, ignore_index=True)
-    feedback_df.to_csv(feedback_file, index=False)
-    
-    st.success('Thanks for your feedback!')
