@@ -118,22 +118,15 @@ def recom(dataframe, name):
             st.info('Phone:- ' + contact_no)
 
     st.text("")
-
     image = Image.open('Data/food_2.jpg')
     st.image(image, use_column_width=True)
 
 recom(df, name)
 
-# Initialize session state for feedback fields
-if 'rating' not in st.session_state:
-    st.session_state['rating'] = 1  # Default rating value
-if 'feedback_comment' not in st.session_state:
-    st.session_state['feedback_comment'] = ""
-
 # Collect User Feedback
 st.markdown("## Rate Your Experience")
-rating = st.slider('Rate this restaurant (1-5)', 1, 5, key='rating')
-feedback_comment = st.text_area('Your Feedback', key='feedback_comment')
+rating = st.slider('Rate this restaurant (1-5)', 1, 5)
+feedback_comment = st.text_area('Your Feedback')
 
 if st.button('Submit Feedback'):
     # Save the feedback to a CSV file
@@ -148,12 +141,8 @@ if st.button('Submit Feedback'):
     feedback_df = pd.read_csv(feedback_file)
 
     # Append new feedback
-    new_feedback = pd.DataFrame([{'Reviews': f'{st.session_state.rating} of 5 bubbles', 'Comments': st.session_state.feedback_comment}])
+    new_feedback = pd.DataFrame([{'Reviews': f'{rating} of 5 bubbles', 'Comments': feedback_comment}])
     feedback_df = pd.concat([feedback_df, new_feedback], ignore_index=True)
     feedback_df.to_csv(feedback_file, index=False)
-    
-    # Clear the input fields
-    st.session_state['rating'] = 1
-    st.session_state['feedback_comment'] = ""
     
     st.success('Thanks for your feedback!')
