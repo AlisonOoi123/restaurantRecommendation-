@@ -50,30 +50,6 @@ df = df.reset_index(drop=True)
 
 name = st.selectbox('Select the Restaurant you like', (list(df['Name'].unique())))
 
-# Collect User Feedback
-st.markdown("## Rate Your Experience")
-rating = st.slider('Rate this restaurant (1-5)', 1, 5)
-feedback_comment = st.text_area('Your Feedback')
-
-if st.button('Submit Feedback'):
-    # Save the feedback to a CSV file
-    feedback_file = 'Data/feedback.csv'
-    
-    # Create the CSV file if it doesn't exist
-    if not os.path.isfile(feedback_file):
-        feedback_df = pd.DataFrame(columns=['Reviews', 'Comments'])
-        feedback_df.to_csv(feedback_file, index=False)
-    
-    # Load existing feedback data
-    feedback_df = pd.read_csv(feedback_file)
-
-    # Append new feedback
-    new_feedback = pd.DataFrame([{'Reviews': f'{rating} of 5 bubbles', 'Comments': feedback_comment}])
-    feedback_df = pd.concat([feedback_df, new_feedback], ignore_index=True)
-    feedback_df.to_csv(feedback_file, index=False)
-    
-    st.success('Thanks for your feedback!')
-
 def recom(dataframe, name):
     dataframe = dataframe.drop(["Trip_advisor Url", "Menu"], axis=1)
     
@@ -146,3 +122,27 @@ def recom(dataframe, name):
     st.image(image, use_column_width=True)
 
 recom(df, name)
+
+# Collect User Feedback
+st.markdown("## Rate Your Experience")
+rating = st.slider('Rate this restaurant (1-5)', 1, 5)
+feedback_comment = st.text_area('Your Feedback')
+
+if st.button('Submit Feedback'):
+    # Save the feedback to a CSV file
+    feedback_file = 'Data/feedback.csv'
+    
+    # Create the CSV file if it doesn't exist
+    if not os.path.isfile(feedback_file):
+        feedback_df = pd.DataFrame(columns=['Reviews', 'Comments'])
+        feedback_df.to_csv(feedback_file, index=False)
+    
+    # Load existing feedback data
+    feedback_df = pd.read_csv(feedback_file)
+
+    # Append new feedback
+    new_feedback = pd.DataFrame([{'Reviews': f'{rating} of 5 bubbles', 'Comments': feedback_comment}])
+    feedback_df = pd.concat([feedback_df, new_feedback], ignore_index=True)
+    feedback_df.to_csv(feedback_file, index=False)
+    
+    st.success('Thanks for your feedback!')
