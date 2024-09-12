@@ -68,8 +68,8 @@ if st.button('Submit Feedback'):
     feedback_df = pd.read_csv(feedback_file)
 
     # Append new feedback
-    new_feedback = {'Reviews': f'{rating} of 5 bubbles', 'Comments': feedback_comment}
-    feedback_df = feedback_df.append(new_feedback, ignore_index=True)
+    new_feedback = pd.DataFrame([{'Reviews': f'{rating} of 5 bubbles', 'Comments': feedback_comment}])
+    feedback_df = pd.concat([feedback_df, new_feedback], ignore_index=True)
     feedback_df.to_csv(feedback_file, index=False)
     
     st.success('Thanks for your feedback!')
