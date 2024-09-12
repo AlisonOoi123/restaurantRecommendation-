@@ -123,10 +123,16 @@ def recom(dataframe, name):
 
 recom(df, name)
 
+# Initialize session state for feedback fields
+if 'rating' not in st.session_state:
+    st.session_state['rating'] = 1  # Default rating value
+if 'feedback_comment' not in st.session_state:
+    st.session_state['feedback_comment'] = ""
+
 # Collect User Feedback
 st.markdown("## Rate Your Experience")
-rating = st.slider('Rate this restaurant (1-5)', 1, 5)
-feedback_comment = st.text_area('Your Feedback')
+rating = st.slider('Rate this restaurant (1-5)', 1, 5, key='rating')
+feedback_comment = st.text_area('Your Feedback', key='feedback_comment')
 
 if st.button('Submit Feedback'):
     # Save the feedback to a CSV file
@@ -146,17 +152,7 @@ if st.button('Submit Feedback'):
     feedback_df.to_csv(feedback_file, index=False)
     
     # Clear the input fields
-    st.session_state['rating'] = None
+    st.session_state['rating'] = 1
     st.session_state['feedback_comment'] = ""
     
     st.success('Thanks for your feedback!')
-
-# Initialize session state for feedback fields
-if 'rating' not in st.session_state:
-    st.session_state['rating'] = 1  # Default rating value
-if 'feedback_comment' not in st.session_state:
-    st.session_state['feedback_comment'] = ""
-
-# Display feedback fields with values from session state
-rating = st.slider('Rate this restaurant (1-5)', 1, 5, key='rating')
-feedback_comment = st.text_area('Your Feedback', key='feedback_comment')
