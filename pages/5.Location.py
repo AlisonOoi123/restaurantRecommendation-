@@ -67,7 +67,7 @@ st.markdown(
     <label style='font-family:"Comic Sans MS", cursive; font-size:18px;'>
     Enter a location:
     </label>
-    <p style='font-size:12px;'> Example: 3WelcomeHotel Bengaluru, 46, Richmond Road, Bangalore
+    <p style='font-size:12px;'> Example: WelcomeHotel Bengaluru, 46, Richmond Road, Bangalore
     </p>
     """, 
     unsafe_allow_html=True
