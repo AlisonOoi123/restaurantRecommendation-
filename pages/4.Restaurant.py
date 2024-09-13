@@ -98,28 +98,27 @@ def details(dataframe,option):
         image = Image.open('Data/Washington/washington.jpg')
         st.image(image, use_column_width=True)
 
-    title = st.selectbox('Select Your Restaurant', (list(dataframe['Name'])))
+  # Filter for unique restaurant names
+unique_restaurants = dataframe['Name'].drop_duplicates()
 
+# Use the unique restaurant names in the selectbox
+title = st.selectbox('Select Your Restaurant', unique_restaurants)
 
-    if title in dataframe['Name'].values:
-        Reviews = (dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Reviews'])
-        st.subheader("Restaurant Rating:-")
+# Check if the selected restaurant exists in the dataframe
+if title in dataframe['Name'].values:
+    Reviews = dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Reviews']
+    st.subheader("Restaurant Rating:-")
 
-        #REVIEWS
-        if Reviews == '4.5':
-            image = Image.open('Data/Ratings/Img4.5.png')
-            st.image(image, use_column_width=True)
-
-
-        elif Reviews == '4':
-            image = Image.open('Data/Ratings/Img4.0.png')
-            st.image(image, use_column_width=True)
-
-
-        elif Reviews == '5':
-            image = Image.open('Data/Ratings/Img5.0.png')
-            st.image(image, use_column_width=True)
-
+    # REVIEWS
+    if Reviews == '4.5':
+        image = Image.open('Data/Ratings/Img4.5.png')
+        st.image(image, use_column_width=True)
+    elif Reviews == '4':
+        image = Image.open('Data/Ratings/Img4.0.png')
+        st.image(image, use_column_width=True)
+    elif Reviews == '5':
+        image = Image.open('Data/Ratings/Img5.0.png')
+        st.image(image, use_column_width=True)
         else:
             pass
 
