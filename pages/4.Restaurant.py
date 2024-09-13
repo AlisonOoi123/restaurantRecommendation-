@@ -98,7 +98,12 @@ def details(dataframe,option):
         image = Image.open('Data/Washington/washington.jpg')
         st.image(image, use_column_width=True)
 
-    title = st.selectbox('Select Your Restaurant', (list(dataframe['Name'])))
+   # Filter for unique restaurant names
+unique_restaurants = dataframe['Name'].drop_duplicates()
+
+# Use the unique restaurant names in the selectbox
+title = st.selectbox('Select Your Restaurant', unique_restaurants)
+
 
     if title in dataframe['Name'].values:
         Reviews = (dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Reviews'])
