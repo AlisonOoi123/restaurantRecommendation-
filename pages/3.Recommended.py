@@ -1,6 +1,7 @@
 
 import pandas as pd
 import streamlit as st
+import os
 from bokeh.models.widgets import Div
 from PIL import Image
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -135,7 +136,33 @@ def recom(dataframe,name):
 
 recom(df,name)
 
+# Collect User Feedback
+st.markdown("## Rate Your Experience")
+rating = st.slider('Rate this restaurant (1-5)', 1, 5)
+feedback_comment = st.text_area('Your Feedback')
 
+if st.button('Submit Feedback'):
+    # Save the feedback to a CSV file
+    feedback_file = 'Data/feedback.csv'
+    
+    # Create the CSV file if it doesn't exist
+    if not os.path.isfile(feedback_file):
+        feedback_df = pd.DataFrame(columns=['Reviews', 'Comments'])
+        feedback_df.to_csv(feedback_file, index=False)
+    
+    # Load existing feedback data
+    feedback_df = pd.read_csv(feedback_file)
+
+    # Append new feedback
+    new_feedback = pd.DataFrame([{'Reviews': f'{rating} of 5 bubbles', 'Comments': feedback_comment}])
+    feedback_df = pd.concat([feedback_df, new_feedback], ignore_index=True)
+    feedback_df.to_csv(feedback_file, index=False)
+    
+    # Clear the fields after submission
+    st.session_state.rating = None
+    st.session_state.feedback_comment = ''
+    
+    st.success('Thanks for your feedback!')
 
 
 
