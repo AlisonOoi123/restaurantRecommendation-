@@ -1,8 +1,5 @@
-mkdir -p ~/.streamlit
+source venv/bin/activate  # Linux/macOS
+venv\Scripts\activate     # Windows
 
-echo "[server]
-headless = true
-port = $PORT
-enableCORS = false
-" > ~/.streamlit/config.toml
-
+pip install googlemaps
+pip install openpyxl
