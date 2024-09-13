@@ -98,7 +98,7 @@ def details(dataframe,option):
         image = Image.open('Data/Washington/washington.jpg')
         st.image(image, use_column_width=True)
 
-  # Filter for unique restaurant names
+# Filter for unique restaurant names
 unique_restaurants = dataframe['Name'].drop_duplicates()
 
 # Use the unique restaurant names in the selectbox
@@ -119,44 +119,38 @@ if title in dataframe['Name'].values:
     elif Reviews == '5':
         image = Image.open('Data/Ratings/Img5.0.png')
         st.image(image, use_column_width=True)
-        else:
-            pass
+    else:
+        pass  # Correct indentation of else block
 
-        if 'Comments' not in dataframe.columns:
-            pass
-        else:
-            comment = (dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Comments'])
-            if comment != "No Comments":
-                st.subheader("Comments:-")
+    # Comments section
+    if 'Comments' not in dataframe.columns:
+        pass
+    else:
+        comment = dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Comments']
+        if comment != "No Comments":
+            st.subheader("Comments:-")
+            st.warning(comment)
 
-                st.warning(comment)
-            else:
-                pass
+    # Type of restaurant
+    Type = dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Type']
+    st.subheader("Restaurant Category:-")
+    st.error(Type)
 
-        #TYPE OF RESTURANT
-        Type = (dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Type'])
-        st.subheader("Restaurant Category:-")
-        st.error(Type)
+    # Location
+    Location = dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Location']
+    st.subheader("The Address:-")
+    st.success(Location)
 
-        #LOCATION
-        Location = (dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Location'])
-        st.subheader("The Address:-")
+    # Contact details
+    contact_no = dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Contact Number']
+    if contact_no != "Not Available":
+        st.subheader("Contact Details:-")
+        st.info('Phone:- ' + contact_no)
 
-        st.success(Location)
+st.text("")
+image = Image.open('Data/food_2.jpg')
+st.image(image, use_column_width=True)
 
-        #CONTACT DETAILS
-        contact_no = (dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Contact Number'])
-        if contact_no == "Not Available":
-            pass
-
-        else:
-            st.subheader("Contact Details:-")
-            st.info('Phone:- '+ contact_no)
-
-        
-    st.text("")
-    image = Image.open('Data/food_2.jpg')
-    st.image(image, use_column_width=True)
 
 
 
