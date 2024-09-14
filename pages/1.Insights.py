@@ -52,35 +52,41 @@ with col2:
     st.pyplot(fig)
 
 # Visualization for number of restaurants per state
-df['State'] = [i.split(",")[-1].split(" ")[1] for i in df.Location]
-df = df.drop(df[df.State == ''].index[0])
+# Handle non-string values in 'Location' column
+df['State'] = [i.split(",")[-1].split(" ")[1] if isinstance(i, str) else "" for i in df.Location]
+
+# Remove rows where 'State' is empty
+df = df[df['State'] != '']
+
+# Proceed with counting restaurants per state
 state_counts = df['State'].value_counts()
+
+# Plot the results
 fig, ax = plt.subplots()
 sns.barplot(x=state_counts.index, y=state_counts, palette="rocket", ax=ax)
 
-fig.set_facecolor('#121212') 
+fig.set_facecolor('#121212')
 ax.set_facecolor('#121212')
 ax.set_ylabel('No of Restaurants', color='white')
 ax.set_xlabel('State', color='white')
 ax.tick_params(color='white')
 ax.title.set_color('white')
-plt.xticks(rotation=45, color='white')  
-plt.yticks(rotation=45, color='white')  
-
-
-
+plt.xticks(rotation=45, color='white')
+plt.yticks(rotation=45, color='white')
 
 for spine in ['top', 'right']:
     ax.spines[spine].set_visible(False)
+
 plt.gcf().set_size_inches(7, 5)
+
 with col1:
     st.markdown("""
     ## No of Restaurants per State
     Curious about which states boast the highest number of restaurants? Our bar chart breaks down the restaurant scene across different states, giving you insights into where culinary diversity thrives.
     """)
     plt.tight_layout()
-
     st.pyplot(fig)
+ 
 
 # State with the best restaurant
 df['Reviews'] = [float(review.split(" ")[0]) for review in df.Reviews]
