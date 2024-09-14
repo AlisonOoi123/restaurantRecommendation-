@@ -129,8 +129,9 @@ with col2:
     st.pyplot(fig)
 
 # Top 5 cities for food
-df['City'] = [",".join(i.split(",")[:-1]) for i in df.Location]
+df['City'] = [",".join(i.split(",")[:-1]) for i in df['address']]
 city_total_ratings = df.groupby('City')['weighted_ratings'].sum().reset_index().sort_values(by='weighted_ratings', ascending=False).head(5)
+
 with col2:
     st.markdown("""
     ## Top 5 Cities For Food
@@ -147,3 +148,4 @@ with col2:
     plt.xticks(rotation=45)
     plt.tight_layout()
     st.pyplot(fig)
+
