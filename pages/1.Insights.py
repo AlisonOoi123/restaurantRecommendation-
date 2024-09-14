@@ -82,15 +82,25 @@ with col1:
 
     st.pyplot(fig)
 
-df['Reviews'] = [float(review.split(" ")[0]) for review in df.Reviews]
-df['No of Reviews'] = [int(reviews.split(" ")[0].replace(",", "")) for reviews in df['No of Reviews']]
-df['weighted_ratings'] = df.Reviews * df['No of Reviews']
+# Convert 'Reviews' column to float, handle non-numeric values by coercing errors to NaN
+df['Reviews'] = pd.to_numeric(df['Reviews'].str.split(" ").str[0], errors='coerce')
+
+# Convert 'No of Reviews' column to int, handle non-numeric values by coercing errors to NaN
+df['No of Reviews'] = pd.to_numeric(df['No of Reviews'].str.split(" ").str[0].replace(",", ""), errors='coerce')
+
+# Drop rows where 'Reviews' or 'No of Reviews' are NaN, since we can't use them for calculations
+df = df.dropna(subset=['Reviews', 'No of Reviews'])
+
+# Calculate the weighted ratings
+df['weighted_ratings'] = df['Reviews'] * df['No of Reviews']
+
+# Group by state to calculate maximum weighted ratings
 state_avg_ratings = df.groupby('State')['weighted_ratings'].max().reset_index()
 
+# Plot the state with the best restaurant
 with col1:
     st.markdown("""
     ## State with the Best Restaurant
-    Delve into our analysis of the state with the best restaurant. We've calculated weighted average ratings to determine which state offers the ultimate dining experience, combining both quality and quantity.
     """)
     fig, ax = plt.subplots()
     fig.set_facecolor('#121212') 
@@ -103,6 +113,7 @@ with col1:
     plt.xticks(rotation=45)
     plt.tight_layout()
     st.pyplot(fig)
+
 
 # Best state for food
 state_total_ratings = df.groupby('State')['weighted_ratings'].sum().reset_index()
