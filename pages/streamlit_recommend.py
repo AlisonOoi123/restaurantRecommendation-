@@ -88,7 +88,7 @@ st.markdown(
 @st.cache_data
 def load_data():
     try:
-        df = pd.read_excel('final_sentiment_df.xlsx')  # Assuming the data file is named 'final_sentiment_df.xlsx'
+        df = pd.read_excel('./Data/final_sentiment_df.xlsx')  # Assuming the data file is named 'final_sentiment_df.xlsx'
         return df
     except Exception as e:
         st.error(f"Error loading data: {e}")
