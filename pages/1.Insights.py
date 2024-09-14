@@ -82,11 +82,11 @@ with col1:
 
     st.pyplot(fig)
 
+# State with the best restaurant
 df['Reviews'] = [float(review.split(" ")[0]) for review in df.Reviews]
 df['No of Reviews'] = [int(reviews.split(" ")[0].replace(",", "")) for reviews in df['No of Reviews']]
 df['weighted_ratings'] = df.Reviews * df['No of Reviews']
 state_avg_ratings = df.groupby('State')['weighted_ratings'].max().reset_index()
-
 with col1:
     st.markdown("""
     ## State with the Best Restaurant
