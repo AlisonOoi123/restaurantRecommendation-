@@ -6,7 +6,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 
 # Load the dataset
-df = pd.read_csv("./Data/TripAdvisor_RestauarantRecommendation.csv")
+df = pd.read_csv("/content/TripAdvisor_RestauarantRecommendation.csv")
 
 # Combine 'Street Address' and 'Location' into one 'Location' column and clean the data
 df["Location"] = df["Street Address"] + ', ' + df["Location"]
@@ -58,6 +58,9 @@ name = st.selectbox('Select the Restaurant you like', list(df['Name'].unique()))
 def recom(dataframe, name):
     dataframe = dataframe.drop(["Trip_advisor Url", "Menu"], axis=1)
     
+    # Filter out restaurants without comments
+    dataframe = dataframe[dataframe['Comments'].notna() & (dataframe['Comments'] != "No Comments")]
+
     # Creating recommendations based on 'Type'
     tfidf = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf.fit_transform(dataframe['Type'])  # Using 'Type' for recommendations
