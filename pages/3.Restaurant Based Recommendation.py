@@ -6,7 +6,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 
 # Load the dataset
-df = pd.read_csv("./Data/TripAdvisor_RestauarantRecommendation.csv")
+df = pd.read_csv("/content/TripAdvisor_RestauarantRecommendation.csv")
 
 # Combine 'Street Address' and 'Location' into one 'Location' column and clean the data
 df["Location"] = df["Street Address"] + ', ' + df["Location"]
@@ -50,7 +50,7 @@ Begin exploring the diverse culinary landscape and uncover hidden gastronomic tr
 image = Image.open('Data/food_cover.jpg')
 st.image(image, use_column_width=True)
 
-st.markdown(""" ### Select Restaurant """)
+st.markdown("### Select Restaurant")
 
 # User input to select a restaurant
 name = st.selectbox('Select the Restaurant you like', list(df['Name'].unique()))
@@ -77,15 +77,22 @@ def recom(dataframe, name):
     sim_scores = sim_scores[1:11]  # Top 10 most similar restaurants, excluding the selected one
     restaurant_indices = [i[0] for i in sim_scores]
 
-    # Get the names of the top 10 recommended restaurants
-    recommended = list(dataframe['Name'].iloc[restaurant_indices])
-    
+    # Get the names and ratings of the top 10 recommended restaurants
+    recommended = dataframe.iloc[restaurant_indices]
+    recommended = recommended[['Name', 'Ratings']]
+
+    # Sort recommended restaurants by their ratings
+    recommended = recommended.sort_values(by='Ratings', ascending=False)
+
     st.markdown("## Top 10 Restaurants you might like:")
 
-    title = st.selectbox('Restaurants most similar', recommended)
+    # User selects from the list of recommended restaurants
+    title = st.selectbox('Restaurants most similar', recommended['Name'])
     if title in dataframe['Name'].values:
-        reviews = dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Reviews']
-        st.markdown("### Restaurant Rating:-")
+        details = dataframe[dataframe['Name'] == title].iloc[0]
+        reviews = details['Reviews']
+        
+        st.markdown("### Restaurant Rating:")
 
         # Display reviews as images
         if reviews == '4.5 of 5 bubbles':
@@ -102,29 +109,29 @@ def recom(dataframe, name):
         
         # Display comments
         if 'Comments' in dataframe.columns:
-            comment = dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Comments']
+            comment = details['Comments']
             if comment != "No Comments":
-                st.markdown("### Comments:-")
+                st.markdown("### Comments:")
                 st.warning(comment)
             else:
                 pass
 
         # Display type of restaurant
-        rest_type = dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Type']
-        st.markdown("### Restaurant Category:-")
+        rest_type = details['Type']
+        st.markdown("### Restaurant Category:")
         st.error(rest_type)
 
         # Display location
-        location = dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Location']
-        st.markdown("### The Address:-")
+        location = details['Location']
+        st.markdown("### The Address:")
         st.success(location)
 
         # Display contact details
-        contact_no = dataframe.at[dataframe['Name'].eq(title).idxmax(), 'Contact Number']
+        contact_no = details['Contact Number']
         if contact_no != "Not Available":
-            st.markdown("### Contact Details:-")
-            st.info('Phone:- ' + contact_no)
-    
+            st.markdown("### Contact Details:")
+            st.info('Phone: ' + contact_no)
+
     st.text("")
     image = Image.open('Data/food_2.jpg')
     st.image(image, use_column_width=True)
