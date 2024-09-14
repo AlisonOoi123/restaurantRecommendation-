@@ -5,7 +5,7 @@ from sklearn.metrics.pairwise import linear_kernel
 from PIL import Image
 
 # Load the dataset
-df = pd.read_csv("/content/TripAdvisor_RestauarantRecommendation.csv")
+df = pd.read_csv("./Data/TripAdvisor_RestauarantRecommendation.csv")
 
 df["Location"] = df["Street Address"] + ', ' + df["Location"]
 df = df.drop(['Street Address'], axis=1)
