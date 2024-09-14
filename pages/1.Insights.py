@@ -51,9 +51,8 @@ with col2:
 
     st.pyplot(fig)
 
-# Visualization for number of restaurants per state
-# Handle non-string values in 'Location' column
-df['State'] = [i.split(",")[-1].split(" ")[1] if isinstance(i, str) else "" for i in df.Location]
+# Replace 'Location' with 'address'
+df['State'] = [i.split(",")[-1].split(" ")[1] if isinstance(i, str) else "" for i in df['address']]
 
 # Remove rows where 'State' is empty
 df = df[df['State'] != '']
@@ -86,7 +85,7 @@ with col1:
     """)
     plt.tight_layout()
     st.pyplot(fig)
- 
+
 
 # State with the best restaurant
 df['Reviews'] = [float(review.split(" ")[0]) for review in df.Reviews]
