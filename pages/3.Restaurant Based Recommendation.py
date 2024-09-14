@@ -90,7 +90,7 @@ def recom(dataframe, name):
     st.markdown("## Top 10 Restaurants you might like:")
 
     # User selects from the list of recommended restaurants
-    title = st.selectbox('Restaurants most similar[based on user ratings]', recommended['Name'])
+    title = st.selectbox('Restaurants most similar [Based on user ratings(collaborative)]', recommended['Name'])
     if title in dataframe['Name'].values:
         details = dataframe[dataframe['Name'] == title].iloc[0]
         reviews = details['Reviews']
