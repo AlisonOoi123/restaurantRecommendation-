@@ -82,20 +82,9 @@ with col1:
 
     st.pyplot(fig)
 
-# State with the best restaurant
-# Convert 'Reviews' column to float, handle non-numeric values by coercing to NaN
-df['Reviews'] = pd.to_numeric(df['Reviews'].str.split(" ").str[0], errors='coerce')
-
-# Convert 'No of Reviews' column to int, handle non-numeric values by coercing to NaN
-df['No of Reviews'] = pd.to_numeric(df['No of Reviews'].str.split(" ").str[0].str.replace(",", ""), errors='coerce')
-
-# Drop rows where Reviews or No of Reviews are NaN, since we can't use them
-df = df.dropna(subset=['Reviews', 'No of Reviews'])
-
-# Calculate weighted ratings
-df['weighted_ratings'] = df['Reviews'] * df['No of Reviews']
-
-# Group by state and find the state with the highest weighted ratings
+df['Reviews'] = [float(review.split(" ")[0]) for review in df.Reviews]
+df['No of Reviews'] = [int(reviews.split(" ")[0].replace(",", "")) for reviews in df['No of Reviews']]
+df['weighted_ratings'] = df.Reviews * df['No of Reviews']
 state_avg_ratings = df.groupby('State')['weighted_ratings'].max().reset_index()
 
 with col1:
