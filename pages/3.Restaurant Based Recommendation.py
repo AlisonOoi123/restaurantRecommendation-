@@ -56,11 +56,13 @@ st.markdown("### Select Restaurant")
 name = st.selectbox('Select the Restaurant you like', list(df['Name'].unique()))
 
 def recom(dataframe, name):
-    # Drop unnecessary columns and filter out rows with missing 'Comments'
+    # Drop unnecessary columns
     dataframe = dataframe.drop(["Trip_advisor Url", "Menu"], axis=1)
+    
+    # Filter out restaurants without comments
     dataframe = dataframe[dataframe['Comments'].notna() & (dataframe['Comments'] != "No Comments")]
 
-    # TF-IDF Vectorization based on 'Type'
+    # Creating recommendations based on 'Type'
     tfidf = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf.fit_transform(dataframe['Type'])  # Using 'Type' for recommendations
     cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
@@ -82,19 +84,17 @@ def recom(dataframe, name):
 
     # Get the names and ratings of the top 10 recommended restaurants
     recommended = dataframe.iloc[restaurant_indices]
-    recommended = recommended[['Name', 'Ratings']]
+    recommended = recommended[['Name', 'Ratings']]  # Only use the 'Name' and 'Ratings' columns
 
-    # Sort recommended restaurants by their ratings
-    recommended = recommended.sort_values(by='Ratings', ascending=False)
-
+    # Display top 10 similar restaurants
     st.markdown("## Top 10 Restaurants you might like:")
 
     # User selects from the list of recommended restaurants
-    title = st.selectbox('Restaurants most similar [Based on Type]', recommended['Name'])
+    title = st.selectbox('Restaurants similar to your choice (Based on Type)', recommended['Name'])
     if title in dataframe['Name'].values:
         details = dataframe[dataframe['Name'] == title].iloc[0]
         reviews = details['Reviews']
-
+        
         st.markdown("### Restaurant Rating:")
 
         # Display reviews as images
@@ -136,3 +136,31 @@ def recom(dataframe, name):
 
 # Call the recommendation function
 recom(df, name)
+
+# Collect User Feedback
+st.markdown("## Rate Your Experience")
+rating = st.slider('Rate this restaurant (1-5)', 1, 5)
+feedback_comment = st.text_area('Your Feedback')
+
+if st.button('Submit Feedback'):
+    # Save the feedback to a CSV file
+    feedback_file = 'Data/feedback.csv'
+    
+    # Create the CSV file if it doesn't exist
+    if not os.path.isfile(feedback_file):
+        feedback_df = pd.DataFrame(columns=['Reviews', 'Comments'])
+        feedback_df.to_csv(feedback_file, index=False)
+    
+    # Load existing feedback data
+    feedback_df = pd.read_csv(feedback_file)
+
+    # Append new feedback
+    new_feedback = pd.DataFrame([{'Reviews': f'{rating} of 5 bubbles', 'Comments': feedback_comment}])
+    feedback_df = pd.concat([feedback_df, new_feedback], ignore_index=True)
+    feedback_df.to_csv(feedback_file, index=False)
+    
+    # Clear the fields after submission
+    st.session_state.rating = None
+    st.session_state.feedback_comment = ''
+    
+    st.success('Thanks for your feedback!')
