@@ -40,11 +40,11 @@ option = st.selectbox('Select Your State', ('New York', 'New Jersey', 'Californi
 
 # Details of every restaurant
 def details(dataframe):
-    # Filter for unique restaurant names
-    unique_restaurants = dataframe['Name'].drop_duplicates()
+    # Filter for unique restaurant names and limit to top 20
+    unique_restaurants = dataframe['Name'].drop_duplicates().head(20)
     
     # Use the unique restaurant names in the selectbox
-    title = st.selectbox('Select Your Restaurant', unique_restaurants)
+    title = st.selectbox('Select Your Restaurant (Top 20)', unique_restaurants)
 
     # Check if the selected restaurant exists in the dataframe
     if title in dataframe['Name'].values:
@@ -103,7 +103,6 @@ elif option == 'Texas':
 elif option == 'Washington':
     details(Washington)
 
-
 # Collect User Feedback
 st.markdown("## Rate Your Experience")
 rating = st.slider('Rate this restaurant (1-5)', 1, 5)
@@ -127,7 +126,5 @@ if st.button('Submit Feedback'):
     feedback_df.to_csv(feedback_file, index=False)
     
     # Clear the fields after submission
-    st.session_state.rating = None
-    st.session_state.feedback_comment = ''
-    
     st.success('Thanks for your feedback!')
+
