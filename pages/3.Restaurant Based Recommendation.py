@@ -62,12 +62,12 @@ def recom(dataframe, name):
     # Filter out restaurants without comments
     dataframe = dataframe[dataframe['Comments'].notna() & (dataframe['Comments'] != "No Comments")]
 
-    # Creating recommendations based on 'Type'
+    # Create TF-IDF matrix based on 'Type'
     tfidf = TfidfVectorizer(stop_words='english')
-    tfidf_matrix = tfidf.fit_transform(dataframe['Type'])  # Using 'Type' for recommendations
+    tfidf_matrix = tfidf.fit_transform(dataframe['Type'])
     cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
 
-    # Mapping restaurant names to their indices
+    # Map restaurant names to their indices
     indices = pd.Series(dataframe.index, index=dataframe['Name']).drop_duplicates()
 
     # Find the index of the restaurant selected by the user
@@ -133,6 +133,7 @@ def recom(dataframe, name):
     st.text("")
     image = Image.open('Data/food_2.jpg')
     st.image(image, use_column_width=True)
+
 
 # Call the recommendation function
 recom(df, name)
